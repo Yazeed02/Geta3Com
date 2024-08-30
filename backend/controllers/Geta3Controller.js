@@ -269,25 +269,27 @@ exports.editPost = asyncHandler(async (req, res) => {
     post.Title = req.body.title || post.Title;
     post.Description = req.body.description || post.Description;
     post.condition = req.body.condition || post.condition;
-    post.brand = req.body.carType || post.brand;
+    post.brand = req.body.brand || post.brand;
     post.carModel = req.body.carModel || post.carModel;
     post.carManufacturingYear = req.body.carManufacturingYear || post.carManufacturingYear;
     post.price = req.body.price || post.price;
 
+    // Update images if provided
     if (req.files && req.files.length > 0) {
       const coverImage = `./uploads/${req.files[0].filename}`;
-      const otherImages = req.files.slice(1).map(file => `./uploads/${file.filename}`);
+      const otherImages = req.files.slice(1).map((file) => `./uploads/${file.filename}`);
       post.Cover = coverImage;
-      post.imgs = otherImages;
+      post.imgs = [...(post.imgs || []), ...otherImages]; // Append new images
     }
 
     await post.save();
-    res.status(200).json({ message: 'Post updated successfully' });
+    res.status(200).json({ message: 'Post updated successfully', post }); // Return updated post
   } catch (error) {
     console.error('Error editing post:', error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
+
 
 
 
@@ -373,14 +375,17 @@ exports.addFavorite = asyncHandler(async (req, res) => {
   }
 
   try {
+    // Check if the post is already favorited by the user
     const favoriteExists = await UserFavGeta3.findOne({ User: userId, Geta3: geta3Id });
     if (favoriteExists) {
-      return res.status(200).json({ message: 'Geta3 already favorited' });
+      return res.status(200).json({ message: 'Geta3 already favorited', favoritesCount: favoriteExists.favoritesCount, isFavorited: true });
     }
 
+    // Create new favorite entry
     const newFavorite = new UserFavGeta3({ User: userId, Geta3: geta3Id });
     await newFavorite.save();
 
+    // Update favorites count in the Geta3 document
     const geta3 = await Geta3.findById(geta3Id);
     geta3.favoritesCount += 1;
     await geta3.save();
@@ -392,7 +397,6 @@ exports.addFavorite = asyncHandler(async (req, res) => {
   }
 });
 
-// Removing a favorite
 exports.removeFavorite = asyncHandler(async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Unauthorized: Please log in to remove from favorites' });
@@ -406,13 +410,15 @@ exports.removeFavorite = asyncHandler(async (req, res) => {
   }
 
   try {
+    // Find and delete the favorite entry
     const favorite = await UserFavGeta3.findOneAndDelete({ User: userId, Geta3: geta3Id });
     if (!favorite) {
       return res.status(404).json({ message: 'Favorite not found' });
     }
 
+    // Decrement the favorites count in the Geta3 document
     const geta3 = await Geta3.findById(geta3Id);
-    geta3.favoritesCount -= 1;
+    geta3.favoritesCount = Math.max(0, geta3.favoritesCount - 1); // Ensure the count doesn't go below zero
     await geta3.save();
 
     res.status(200).json({ favoritesCount: geta3.favoritesCount, isFavorited: false });
@@ -452,6 +458,7 @@ exports.Geta3_detail = asyncHandler(async (req, res) => {
       const firstImageUrl = post.imgs.length > 0 ? `${req.protocol}://${req.get('host')}/uploads/${path.basename(post.imgs[0])}` : null;
       return {
         ...post._doc,
+        imgs: post.imgs.map(img => `${req.protocol}://${req.get('host')}/uploads/${path.basename(img)}`), // Include all images URLs
         firstImage: firstImageUrl, // Include the first image URL
       };
     });
@@ -459,7 +466,7 @@ exports.Geta3_detail = asyncHandler(async (req, res) => {
     return res.status(200).json({
       geta3: { ...geta3._doc, imgs: imagesUrls }, // Include all image URLs
       isFavorited,
-      relatedPosts: updatedRelatedPosts, // Send updated related posts with the first image
+      relatedPosts: updatedRelatedPosts, // Send updated related posts with all images
     });
   } catch (error) {
     console.error(error);
@@ -504,15 +511,20 @@ exports.getTopRetailers = asyncHandler(async (req, res) => {
     const topRetailers = await User.aggregate([
       {
         $lookup: {
-          from: 'geta3s', // The collection name for Geta3
+          from: 'geta3', // Ensure 'geta3s' is the correct collection name
           localField: '_id',
-          foreignField: 'User',
+          foreignField: 'User', // Ensure 'User' is the correct field in 'geta3s'
           as: 'posts'
         }
       },
       {
         $addFields: {
           postCount: { $size: '$posts' } // Calculate the number of posts for each user
+        }
+      },
+      {
+        $match: {
+          postCount: { $gt: 0 } // Only include users with at least one post
         }
       },
       {
@@ -553,7 +565,10 @@ exports.getTopRetailers = asyncHandler(async (req, res) => {
       }
     ]);
 
+    console.log('Top Retailers:', topRetailers); // Debugging output
+
     if (topRetailers.length === 0) {
+      console.log('No retailers found with posts.');
       return res.status(404).json({ message: 'No retailers found' });
     }
 

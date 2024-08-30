@@ -1,0 +1,46 @@
+.container {
+  margin-top: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+}
+
+.header-title img {
+  margin-left: 16px;
+  width: 50px;
+  height: 50px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 20px;
+}
+
+.filters-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.posts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.post-card {
+  width: 300px;
+}
+
+.card-media {
+  height: 140px;
+}

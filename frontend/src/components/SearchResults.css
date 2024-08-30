@@ -1,0 +1,46 @@
+/* SearchResults.css */
+
+.search-results-container {
+  padding: 20px;
+}
+
+.post-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-media {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-description {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.card-meta {
+  margin-top: auto;
+  font-size: 0.8em;
+  color: #999;
+}
+
+.no-results {
+  text-align: center;
+  margin-top: 50px;
+}

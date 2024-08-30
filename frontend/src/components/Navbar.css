@@ -1,0 +1,10 @@
+.navbar-left {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navbar-right {
+  display: flex;
+  justify-content: flex-end;
+}
