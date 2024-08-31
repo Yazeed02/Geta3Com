@@ -26,7 +26,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { fetchPostDetails, fetchComments, addComment, editComment, deleteComment, addFavorite, removeFavorite, deleteGeta3, editPost, fetchUser } from '../api';
 import { useTranslation } from 'react-i18next';
 
-const PostDetail = ({ user }) => {
+const PostDetail = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -42,33 +42,28 @@ const PostDetail = ({ user }) => {
   const [commentError, setCommentError] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0); // For main post images
-  const [relatedImgIndexes, setRelatedImgIndexes] = useState([]); // For related post images
+  const [imgIndex, setImgIndex] = useState(0);
+  const [relatedImgIndexes, setRelatedImgIndexes] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const userData = await fetchUser();
+        setUser(userData);
+
         const postData = await fetchPostDetails(postId);
         const { geta3, isFavorited, relatedPosts } = postData;
         setPost(geta3);
         setIsFavorited(isFavorited);
         setRelatedPosts(relatedPosts);
 
-        // Initialize image index for related posts
         setRelatedImgIndexes(new Array(relatedPosts.length).fill(0));
 
         const postComments = await fetchComments(postId);
         setComments(postComments);
-
-        // Fetch user profile to check if the post is in favorites
-        if (user) {
-          const profileData = await fetchUser();
-          const userFavorites = profileData.userFavorites || []; // Ensure userFavorites is an array
-          const isPostFavorited = userFavorites.some((fav) => fav && fav._id === postId); // Safely check for null
-          setIsFavorited(isPostFavorited);
-        }
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(t('errorLoading'));
@@ -78,9 +73,10 @@ const PostDetail = ({ user }) => {
     };
 
     fetchData();
-  }, [postId, t, user]);
+  }, [postId, t]);
 
   const handleToggleFavorite = async () => {
+
     if (!user) {
       setFavoriteError(t('loginPrompt'));
       return;
@@ -198,7 +194,7 @@ const PostDetail = ({ user }) => {
     return <Typography variant="h6" color="error">{error}</Typography>;
   }
 
-  if (!post) {
+  if (!post || !post.User) {
     return <Typography variant="h6">{t('noResultsFound')}</Typography>;
   }
 
@@ -206,6 +202,8 @@ const PostDetail = ({ user }) => {
     <Container component="main" sx={{ flexGrow: 1, p: 3 }}>
       <CssBaseline />
       <Grid container spacing={3}>
+      
+
         <Grid item xs={12}>
           <Card>
             <CardContent>
@@ -263,7 +261,7 @@ const PostDetail = ({ user }) => {
                   <Typography variant="h6"><strong>{t('carModel')}:</strong> {post.carModel}</Typography>
                   <Typography variant="h6"><strong>{t('carManufacturingYear')}:</strong> {post.carManufacturingYear}</Typography>
                   <Typography variant="h6"><strong>{t('brand')}:</strong> {post.brand}</Typography>
-                  <Typography variant="h6"><strong>{t('price')}:</strong> ${post.price}</Typography>
+                  <Typography variant="h6"><strong>{t('price')}:</strong> {post.price} JOD</Typography>
                   <Typography variant="h6"><strong>{t('relatedLink')}:</strong> <Link href={post.Related_link} target="_blank" rel="noopener noreferrer">{post.Related_link}</Link></Typography>
                   <Typography variant="h6"><strong>{t('favoritesCount')}:</strong> {post.favoritesCount}</Typography>
                   <Typography variant="h6"><strong>{t('created_at')}:</strong> {post.created_at}</Typography>
@@ -346,28 +344,51 @@ const PostDetail = ({ user }) => {
                   </Box>
                 </>
               )}
+  {/* User Information Card */}
+  <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>{t('postedBy')}</Typography>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Avatar alt={post.User.Username} src={post.User.avatar} />
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="body1"><strong>{t('username')}:</strong> {post.User.Username}</Typography>
+                  <Typography variant="body1"><strong>{t('name')}:</strong> {post.User.FirstName} {post.User.LastName}</Typography>
+                  <Typography variant="body1"><strong>{t('email')}:</strong> {post.User.Email}</Typography>
+                  <Typography variant="body1"><strong>{t('phoneNumber')}:</strong> {post.User.PhoneNumber}</Typography>
+                  <Typography variant="body1"><strong>{t('location')}:</strong> {post.User.Location}</Typography>
+                  <Typography variant="body1"><strong>{t('memberSince')}:</strong> {post.User.Date_formatted}</Typography>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+        {user && post.User && (user.isAdmin || String(post.User._id) === String(user._id)) && !isEditing && (
+          
+  <CardActions>
+    
+    <Button
+      onClick={() => setIsEditing(true) || setEditPostData(post)}
+      variant="contained"
+      color="primary"
+      startIcon={<EditIcon />}
+      sx={{ mr: 2 }}
+    >
+      {t('editPost')}
+    </Button>
+    <Button
+      onClick={handleDeletePost}
+      variant="contained"
+      color="error"
+      startIcon={<DeleteIcon />}
+    >
+      {t('deletePost')}
+    </Button>
+  </CardActions>
+)}
 
-              {user && (user.isAdmin || post.User._id === user._id) && !isEditing && (
-                <CardActions>
-                  <Button
-                    onClick={() => setIsEditing(true) || setEditPostData(post)}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<EditIcon />}
-                    sx={{ mr: 2 }}
-                  >
-                    {t('editPost')}
-                  </Button>
-                  <Button
-                    onClick={handleDeletePost}
-                    variant="contained"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                  >
-                    {t('deletePost')}
-                  </Button>
-                </CardActions>
-              )}
 
               <Typography variant="h6" sx={{ mt: 2 }}>{t('favoriteBy')} {post.favoritesCount} {t('users')}</Typography>
               <CardActions>

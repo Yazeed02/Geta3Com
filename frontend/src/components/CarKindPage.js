@@ -225,7 +225,7 @@ const CarKindPage = ({ user }) => {
                           Condition: {post.condition}
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.palette.success.main }}>
-                          ${post.price.toLocaleString()}
+                          {post.price.toLocaleString()} JOD
                         </Typography>
                       </CardContent>
                     </Card>

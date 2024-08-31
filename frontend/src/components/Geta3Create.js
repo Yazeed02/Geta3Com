@@ -96,7 +96,7 @@ const Geta3Create = ({ open, onClose }) => {
     formData.append('description', description);
     formData.append('related_link', relatedLink);
     formData.append('condition', condition);
-    formData.append('carType', carType === 'Other' ? customCarType : carType);
+    formData.append('carType', carType);
     formData.append('carModel', carModel);
     formData.append('carManufacturingYear', carManufacturingYear);
     formData.append('price', price);
