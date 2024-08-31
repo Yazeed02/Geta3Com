@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from 'axios'; //Handeling between frontend and backend
 
-const API = axios.create({ baseURL: 'http://localhost:3000' });
+const API = axios.create({ baseURL: 'http://localhost:3000' }); //URL For Backend
 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');

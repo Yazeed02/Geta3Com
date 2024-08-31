@@ -177,21 +177,7 @@ const CarKindPage = ({ user }) => {
               fullWidth
               sx={{ mb: 3 }}
             />
-            <Box sx={{ textAlign: 'center' }}>
-              <Button
-                variant="contained"
-                onClick={filterPosts}
-                sx={{
-                  backgroundColor: '#000',
-                  color: '#fff',
-                  '&:hover': {
-                    backgroundColor: '#333',
-                  },
-                }}
-              >
-                Search
-              </Button>
-            </Box>
+            
           </Box>
         </Grid>
         <Grid item xs={12} md={9}>

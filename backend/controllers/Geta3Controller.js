@@ -49,7 +49,7 @@ exports.Geta3_create_post = [
   body("condition", "Condition must be 'new', 'used', or 'like new'").trim().isIn(['new', 'used', 'like new']).escape(),
   body("carType", "Car type must not be empty").trim().isLength({ min: 1 }).escape(),
   body("carModel", "Car model must not be empty").trim().isLength({ min: 1 }).escape(),
-  body("carManufacturingYear", "Car Manufacturing Year must be a valid year").isInt({ min: 1886, max: new Date().getFullYear() }), // Validate year
+  body("carManufacturingYear").trim().escape(),
   body("price", "Price must be a valid number").isFloat({ min: 0 }).escape(), // Validate price
   asyncHandler(async (req, res, next) => {
     if (!req.user) {
@@ -167,10 +167,14 @@ exports.search_Geta3 = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ message: 'No matching Geta3s found' });
     }
 
-    const updatedResults = searchResults.map(post => ({
-      ...post._doc,
-      Cover: `${req.protocol}://${req.get('host')}/uploads/${path.basename(post.Cover)}`,
-    }));
+    const updatedResults = searchResults.map(post => {
+      // Handle undefined or null Cover
+      const coverPath = post.Cover ? `${req.protocol}://${req.get('host')}/uploads/${path.basename(post.Cover)}` : null;
+      return {
+        ...post._doc,
+        Cover: coverPath,
+      };
+    });
 
     res.status(200).json({ results: updatedResults });
   } catch (error) {
@@ -178,6 +182,7 @@ exports.search_Geta3 = asyncHandler(async (req, res, next) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 

@@ -1,3 +1,4 @@
+//Authorization to check if the user can use this API's or not 
 const passport = require('passport');
 const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
 const User = require('../models/User');

@@ -64,6 +64,7 @@ const SearchResults = () => {
                     className="card-media"
                     image={post.Cover || 'path_to_placeholder_image'}
                     alt={post.Title}
+                    sx={{ height: 200, objectFit: 'cover' }} // Adjust the size of the image
                   />
                   <CardContent>
                     <Typography variant="h6">{post.Title}</Typography>

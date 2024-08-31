@@ -4,13 +4,13 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { createGeta3 } from '../api';
+import { createGeta3 } from '../api'; // Ensure this API call is properly defined
 import Notification from './Notification';
 
 const carTypes = [
-  'AlfaRomeo', 'Audi', 'BMW', 'BYD', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroen', 'Dodge', 
-  'Fiat', 'Ford', 'GAC', 'GMC', 'Haval', 'Honda', 'Hyundai', 'Isuzu', 'Jeep', 'KIA', 'Land Rover', 
-  'Lexus', 'Mazda', 'Mercedes', 'MG', 'Mitsubishi', 'Nissan', 'Peugeot', 'Porsche', 'Renault', 
+  'AlfaRomeo', 'Audi', 'BMW', 'BYD', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroen', 'Dodge',
+  'Fiat', 'Ford', 'GAC', 'GMC', 'Haval', 'Honda', 'Hyundai', 'Isuzu', 'Jeep', 'KIA', 'Land Rover',
+  'Lexus', 'Mazda', 'Mercedes', 'MG', 'Mitsubishi', 'Nissan', 'Peugeot', 'Porsche', 'Renault',
   'Skoda', 'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'VW', 'Other'
 ];
 
@@ -20,9 +20,18 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  borderRadius: 2,
   boxShadow: 24,
   p: 4,
+  width: {
+    xs: '90%',  // 90% width on extra-small screens
+    sm: '70%',  // 70% width on small screens
+    md: '60%',  // 60% width on medium screens
+    lg: '50%',  // 50% width on large screens
+    xl: '40%',  // 40% width on extra-large screens
+  },
+  maxHeight: '90vh',
+  overflowY: 'auto',
 };
 
 const Geta3Create = ({ open, onClose }) => {
@@ -95,7 +104,7 @@ const Geta3Create = ({ open, onClose }) => {
 
     try {
       setLoading(true);
-      await createGeta3(formData);
+      await createGeta3(formData); // Assuming this function handles the API call
       setNotification({ open: true, message: 'Post created successfully.', severity: 'success' });
       onClose();
     } catch (error) {
@@ -104,18 +113,19 @@ const Geta3Create = ({ open, onClose }) => {
       setLoading(false);
     }
   };
+
   return (
     <Modal open={open} onClose={onClose} BackdropProps={{ onClick: (e) => e.stopPropagation() }}>
-      <Box sx={{ ...style, width: 400 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box sx={style}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" component="h2">
             Create a New Post
           </Typography>
-          <IconButton onClick={onClose} sx={{ '&:hover': { backgroundColor: '#333333' } }}>
+          <IconButton onClick={onClose}>
             <CloseIcon />
           </IconButton>
         </Box>
-        {error && <Typography color="error">{error}</Typography>}
+        {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
         <form onSubmit={handleSubmit}>
           <TextField
             label="Title"
@@ -210,7 +220,7 @@ const Geta3Create = ({ open, onClose }) => {
             type="number"
             helperText="Enter the price of the item."
           />
-        <Button
+          <Button
             variant="contained"
             component="label"
             fullWidth
@@ -227,7 +237,6 @@ const Geta3Create = ({ open, onClose }) => {
           </Button>
           <Typography variant="caption">Upload JPEG, PNG, or GIF images (max 5MB each).</Typography>
 
-          {/* Image Preview Section with Remove Option */}
           <Grid container spacing={2} sx={{ mt: 2 }}>
             {imgPreviews.map((src, index) => (
               <Grid item xs={6} sm={4} md={3} key={index} sx={{ position: 'relative' }}>
@@ -262,6 +271,5 @@ const Geta3Create = ({ open, onClose }) => {
     </Modal>
   );
 };
-
 
 export default Geta3Create;

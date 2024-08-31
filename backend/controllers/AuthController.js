@@ -172,8 +172,8 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Please verify your email to login" });
     }
 
-    const accessToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const accessToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: '1h' }); //Login
+    const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' }); //Refresh
 
     user.refreshToken = refreshToken;
     await user.save();
@@ -197,10 +197,6 @@ exports.login = async (req, res) => {
     res.status(500).json({ msg: 'Internal server error' });
   }
 };
-
-
-
-
 
 
 exports.forgotPassword = async (req, res) => {

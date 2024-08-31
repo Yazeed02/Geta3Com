@@ -29,10 +29,8 @@ import Geta3Create from './components/Geta3Create';
 import CarKindPage from './components/CarKindPage';
 import SearchResults from './components/SearchResults';
 import {
-  fetchUser,
   logout,
   refresh_token,
-  forgotPassword,
   fetchTopFavorites,
   fetchTopRetailers,
   searchGeta3,
@@ -176,7 +174,7 @@ const MainContent = () => {
           </Typography>
         </Box>
       </Box>
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2 }}>
+      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2, mb:4 }}>
         {t('carKinds')}
       </Typography>
       <Grid container spacing={2} sx={{ px: 2 }}>
@@ -188,7 +186,7 @@ const MainContent = () => {
                   display: 'block',
                   margin: 'auto',
                   padding: 2,
-                  backgroundColor: '#ffffff',  // Ensure the background is always white
+                  backgroundColor: '#ffffff',  
                   color: theme.palette.mode === 'dark' ? '#000000' : '#000000',
                   borderRadius: '12px',
                   '&:hover': {
@@ -219,7 +217,7 @@ const MainContent = () => {
           {showMore ? 'Show Less' : 'Show More'}
         </Button>
       </Box>
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2 }}>
+      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2, mb:4}}>
         {t('topFavorites')}
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative', px: 2 }}>
@@ -273,7 +271,7 @@ const MainContent = () => {
           <ArrowForwardIos />
         </IconButton>
       </Box>
-      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2 }}>
+      <Typography variant="h5" gutterBottom sx={{ mt: 4, px: 2, mb:4 }}>
         {t('topRetailers')}
       </Typography>
       <TopRetailers topRetailers={topRetailers} />
